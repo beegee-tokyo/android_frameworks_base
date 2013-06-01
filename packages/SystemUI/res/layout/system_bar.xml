@@ -35,14 +35,6 @@
             android:clipChildren="false"
             >
 
-            <!-- notification icons & panel access -->
-            <include layout="@layout/system_bar_notification_area" 
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="1dp"
-                />
-
             <!-- navigation controls -->
             <LinearLayout
                 android:id="@+id/navigationArea"
@@ -97,6 +89,14 @@
                 android:layout_toLeftOf="@+id/notificationArea"
                 android:visibility="gone"
                 />
+            <!-- notification icons & panel access -->
+            <include layout="@layout/system_bar_notification_area" 
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="1dp"
+                />
+
         </RelativeLayout>
     </FrameLayout>
 

@@ -18,10 +18,25 @@ package com.android.systemui;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
+import java.lang.Object;
+import java.lang.System;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+/**
+ * Forward Port Tablet UI toggle
+ * TODO: Fix DateView
+ * Original Patch by Scott Brady <sbradymobile@gmail.com>
+ * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
+ */
+import android.content.ContentResolver;
+import android.provider.Settings;
+import android.os.Build;
+import android.os.SystemProperties;
+/**
+ * Port end
+ */
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -36,6 +51,17 @@ import android.view.accessibility.AccessibilityManager;
 
 public class SystemUIService extends Service {
     static final String TAG = "SystemUIService";
+
+    /**
+     * Forward Port Tablet UI toggle
+     * TODO: Fix DateView
+     * Original Patch by Scott Brady <sbradymobile@gmail.com>
+     * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
+     */
+    Context context = this;
+    /**
+     * Port end
+     */
 
     /**
      * The class names of the stuff to start.
@@ -73,6 +99,40 @@ public class SystemUIService extends Service {
         AccessibilityManager.createAsSharedAcrossUsers(this);
 
         // Pick status bar or system bar.
+        /**
+         * Forward Port Tablet UI toggle
+         * TODO: Fix DateView
+         * Original Patch by Scott Brady <sbradymobile@gmail.com>
+         * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
+         */
+        boolean tabletModeOverride = false;
+        int tabletModeCheckDone = Settings.System.getInt(context.getContentResolver(), Settings.System.TABLET_MODE_CHECK, 0);
+Slog.d("TabletUI", "tabletModeCheckDone at onCreate = "+tabletModeCheckDone);
+        if (tabletModeCheckDone == 0) {
+Slog.d("TabletUI", "tabletModeCheckDone == 0 => Check builds.prop -> tablet.mode");
+            String tabletModePreset = SystemProperties.get("tablet.mode","0");
+Slog.d("TabletUI", "tablet.mode at onCreate = "+tabletModePreset);
+            if (tabletModePreset.equals("1")) {
+Slog.d("TabletUI", "tabletModePreset == 1 => Force tablet UI");
+                Settings.System.putInt(context.getContentResolver(), Settings.System.TABLET_MODE,1);
+                tabletModeOverride = true;
+                Settings.System.putInt(context.getContentResolver(), Settings.System.TABLET_MODE_CHECK,1);
+            } else {
+Slog.d("TabletUI", "tabletModePreset == 0 => Leave decision to Android");
+                tabletModeOverride = false;
+            }
+        } else {
+Slog.d("TabletUI", "tabletModeCheckDone == 1 => Just get Settings.System.TABLET_MODE");
+            tabletModeOverride = (Settings.System.getInt(
+                context.getContentResolver(),
+                Settings.System.TABLET_MODE, 0) == 1);
+Slog.d("TabletUI", "tabletModeOverride at onCreate = "+tabletModeOverride);
+        } 
+        SERVICES[0] = tabletModeOverride
+            ? R.string.config_systemBarComponent
+            : R.string.config_statusBarComponent;
+
+        /*
         IWindowManager wm = WindowManagerGlobal.getWindowManagerService();
         try {
             SERVICES[0] = wm.hasSystemNavBar()
@@ -81,6 +141,10 @@ public class SystemUIService extends Service {
         } catch (RemoteException e) {
             Slog.w(TAG, "Failing checking whether status bar can hide", e);
         }
+        */
+        /**
+         * Port end
+         */
 
         final int N = SERVICES.length;
         mServices = new SystemUI[N];

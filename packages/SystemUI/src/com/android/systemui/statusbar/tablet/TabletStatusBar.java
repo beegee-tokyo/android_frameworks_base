@@ -240,6 +240,7 @@ public class TabletStatusBar extends BaseStatusBar implements
         // updates, which should help keep power consumption down.
 
         lp.gravity = getStatusBarGravity();
+lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
         lp.setTitle("SystemBar");
         lp.packageName = mContext.getPackageName();
         mWindowManager.addView(sb, lp);

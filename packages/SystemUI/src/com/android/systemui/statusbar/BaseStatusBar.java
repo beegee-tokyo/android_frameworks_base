@@ -39,6 +39,16 @@ import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.ActivityNotFoundException;
+/**
+ * Forward Port Tablet UI toggle
+ * TODO: Fix DateView
+ * Original Patch by Scott Brady <sbradymobile@gmail.com>
+ * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
+ */
+import android.content.ContentResolver;
+/**
+ * Port end
+ */
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -228,6 +238,17 @@ public abstract class BaseStatusBar extends SystemUI implements
     };
 
     public void start() {
+        /**
+         * Forward Port Tablet UI toggle
+         * TODO: Fix DateView
+         * Original Patch by Scott Brady <sbradymobile@gmail.com>
+         * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
+         */
+        SettingsObserver observer = new SettingsObserver(mHandler);
+        observer.observe(mContext);
+        /**
+         * Port end
+         */
         mWindowManager = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
         mWindowManagerService = WindowManagerGlobal.getWindowManagerService();
         mDisplay = mWindowManager.getDefaultDisplay();
@@ -1192,6 +1213,36 @@ public abstract class BaseStatusBar extends SystemUI implements
         KeyguardManager km = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
         return km.inKeyguardRestrictedInputMode();
     }
+    /**
+     * Forward Port Tablet UI toggle
+     * TODO: Fix DateView
+     * Original Patch by Scott Brady <sbradymobile@gmail.com>
+     * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
+     */
+    private static class SettingsObserver extends ContentObserver {
+        private Handler mHandler;
+
+        SettingsObserver(Handler handler) {
+            super(handler);
+            mHandler = handler;
+        }
+
+        void observe(Context context) {
+            ContentResolver resolver = context.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.TABLET_MODE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.NAV_BAR_POS), false, this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            android.os.Process.killProcess(android.os.Process.myPid());
+        }
+    };
+    /**
+     * Port end
+     */
 
     public int getExpandedDesktopMode() {
         ContentResolver resolver = mContext.getContentResolver();

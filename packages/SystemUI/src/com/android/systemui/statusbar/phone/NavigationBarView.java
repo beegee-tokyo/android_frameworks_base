@@ -20,15 +20,23 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
 import android.app.StatusBarManager;
+
+import android.app.Activity;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.ServiceManager;
@@ -43,6 +51,12 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+//import android.provider.Settings;
+//import android.preference.PreferenceManager;
+import android.database.ContentObserver;
+import android.content.ContentResolver;
+import android.provider.Settings;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -431,7 +445,26 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     @Override
     public void onFinishInflate() {
         mRotatedViews[Configuration.ORIENTATION_PORTRAIT] = findViewById(R.id.rot0);
-        mRotatedViews[Configuration.ORIENTATION_LANDSCAPE] = findViewById(R.id.rot90);
+        // check properties for the selected navigation bar position. 
+        // Will be centered if not selected!
+	ContentResolver resolver = mContext.getContentResolver();
+	int myNavBarPosSet = Settings.System.getInt(resolver, Settings.System.NAV_BAR_POS, 3);
+
+Slog.d("NavBarPos","navbar_pos_set = "+myNavBarPosSet);
+        if (myNavBarPosSet == 3) { 
+		myNavBarPosSet = 0;
+Slog.d("NavBarPos","myNavBarPosSet was unknown, corrected to left");
+	}
+        if (myNavBarPosSet == 0) { 
+Slog.d("NavBarPos","myNavBarPosSet case left");
+                   mRotatedViews[Configuration.ORIENTATION_LANDSCAPE] = findViewById(R.id.rot90left);
+	} else if (myNavBarPosSet == 1) { 
+Slog.d("NavBarPos","myNavBarPosSet case right");
+                   mRotatedViews[Configuration.ORIENTATION_LANDSCAPE] = findViewById(R.id.rot90right);
+	} else {
+Slog.d("NavBarPos","myNavBarPosSet case center");
+                   mRotatedViews[Configuration.ORIENTATION_LANDSCAPE] = findViewById(R.id.rot90);
+	}
         mCurrentView = mRotatedViews[mContext.getResources().getConfiguration().orientation];
     }
 
@@ -591,4 +624,25 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
         pw.println("    }");
     }
 
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            // Observe all users' changes
+            ContentResolver resolver = mContext.getContentResolver();
+            /**
+             * Forward Port Tablet UI toggle
+             * TODO: Fix DateView
+             * Original Patch by Scott Brady <sbradymobile@gmail.com>
+             * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
+             */
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.NAV_BAR_POS), false, this);
+            /**
+             * Port end
+             */
+        }
+    }
 }

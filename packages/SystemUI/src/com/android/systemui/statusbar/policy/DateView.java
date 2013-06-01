@@ -85,6 +85,13 @@ public class DateView extends TextView implements OnClickListener, OnLongClickLi
         setUpdates();
     }
 
+    /**
+     * Forward Port Tablet UI toggle
+     * TODO: Fix DateView
+     * Original Patch by Scott Brady <sbradymobile@gmail.com>
+     * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
+     */
+    /*
     @Override
     protected void onDraw(Canvas canvas) {
         if (mParent == null) {
@@ -95,6 +102,10 @@ public class DateView extends TextView implements OnClickListener, OnLongClickLi
 
         super.onDraw(canvas);
     }
+    */
+    /**
+     * Port end
+     */
 
     @Override
     protected void onWindowVisibilityChanged(int visibility) {

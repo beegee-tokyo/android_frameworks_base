@@ -82,7 +82,9 @@ final class DisplayPowerController {
     // We might want to turn this off if we cannot get a guarantee that the screen
     // actually turns on and starts showing new content after the call to set the
     // screen state returns.  Playing the animation can also be somewhat slow.
-    private static final boolean USE_ELECTRON_BEAM_ON_ANIMATION = false;
+// **** GANBAROU ADDITIONS STARTS ****
+    private static final boolean USE_ELECTRON_BEAM_ON_ANIMATION = true;
+// **** GANBAROU ADDITIONS END **** 
 
     // If true, enables the use of the screen auto-brightness adjustment setting.
     private static final boolean USE_SCREEN_AUTO_BRIGHTNESS_ADJUSTMENT =

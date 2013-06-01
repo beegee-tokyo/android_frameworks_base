@@ -3124,6 +3124,22 @@ public final class Settings {
           */
          public static final String VOLUME_KEY_CURSOR_CONTROL = "volume_key_cursor_control";
 
+         /**
+          * Forward Port Tablet UI toggle
+          * TODO: Fix DateView
+          * Original Patch by Scott Brady <sbradymobile@gmail.com>
+          * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
+         */
+         /**
+          * @hide
+         */
+         public static final String TABLET_MODE = "tablet_mode";
+         public static final String TABLET_MODE_CHECK = "tablet_mode_check";
+	 public static final String NAV_BAR_POS = "nav_bar_pos";
+         /**
+          * Port end
+         */
+
         /**
          * toggle to "fix" the following: (found in NotificationManagerService)
          *  new in 4.2: if there was supposed to be a sound and we're in vibrate mode,

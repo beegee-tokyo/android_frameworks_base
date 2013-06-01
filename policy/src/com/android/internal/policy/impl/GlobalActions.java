@@ -331,6 +331,26 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 });
         }
 
+        // next: recovery
+        // only shown if enabled, enabled by default
+        mItems.add(new SinglePressAction(R.drawable.gb_recovery, R.string.global_action_recovery) {
+                public void onPress() {
+                    mWindowManagerFuncs.recovery();
+                }
+
+                public boolean onLongPress() {
+                        mWindowManagerFuncs.bootloader();
+                        return true;
+                }
+
+                public boolean showDuringKeyguard() {
+                    return true;
+                }
+
+                public boolean showBeforeProvisioning() {
+                    return true;
+                }
+         });
         // next: profile
         // only shown if both system profiles and the menu item is enabled, enabled by default
         if ((Settings.System.getInt(mContext.getContentResolver(),
