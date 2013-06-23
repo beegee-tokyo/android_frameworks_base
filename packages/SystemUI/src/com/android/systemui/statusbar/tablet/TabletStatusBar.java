@@ -75,6 +75,7 @@ import com.android.systemui.statusbar.SignalClusterView;
 import com.android.systemui.statusbar.StatusBarIconView;
 import com.android.systemui.statusbar.policy.BatteryController;
 import com.android.systemui.statusbar.policy.BluetoothController;
+import com.android.systemui.statusbar.policy.CircleBattery;
 import com.android.systemui.statusbar.policy.CompatModeButton;
 import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.statusbar.policy.NetworkController;
@@ -550,6 +551,11 @@ lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
 
         mBatteryController = new BatteryController(mContext);
         mBatteryController.addIconView((ImageView)sb.findViewById(R.id.battery));
+
+        final CircleBattery circleBattery =
+                (CircleBattery) sb.findViewById(R.id.circle_battery);
+        mBatteryController.addStateChangedCallback(circleBattery);
+
         mBluetoothController = new BluetoothController(mContext);
         mBluetoothController.addIconView((ImageView)sb.findViewById(R.id.bluetooth));
 
