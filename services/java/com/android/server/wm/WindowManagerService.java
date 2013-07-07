@@ -5486,6 +5486,7 @@ public class WindowManagerService extends IWindowManager.Stub
         ShutdownThread.rebootSafeMode(getUiContext(), confirm);
     }
 
+    /** GANBAROU_PATCH_START **/
     // Called by window manager policy.  Not exposed externally.
     @Override
     public void recovery() {
@@ -5497,6 +5498,7 @@ public class WindowManagerService extends IWindowManager.Stub
     public void bootloader() {
         ShutdownThread.bootloader(getUiContext(), null, true);
     }
+    /** GANBAROU_PATCH_END **/
 
     public void setInputFilter(IInputFilter filter) {
         if (!checkCallingPermission(android.Manifest.permission.FILTER_EVENTS, "setInputFilter()")) {
@@ -6901,19 +6903,7 @@ public class WindowManagerService extends IWindowManager.Stub
         sl = reduceConfigLayout(sl, Surface.ROTATION_90, density, unrotDh, unrotDw);
         sl = reduceConfigLayout(sl, Surface.ROTATION_180, density, unrotDw, unrotDh);
         sl = reduceConfigLayout(sl, Surface.ROTATION_270, density, unrotDh, unrotDw);
-        /**
-         * Forward Port Tablet UI toggle
-         * TODO: Fix DateView
-         * Original Patch by Scott Brady <sbradymobile@gmail.com>
-         * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
-         */
-        boolean forceTablet = Settings.System.getInt(mContext.getContentResolver(),
-            Settings.System.TABLET_MODE, 0) == 1 && (int)(displayInfo.smallestNominalAppWidth/ density) < 720;
-        outConfig.smallestScreenWidthDp = forceTablet ? 721 : (int)(displayInfo.smallestNominalAppWidth / density);
-        // outConfig.smallestScreenWidthDp = (int)(displayInfo.smallestNominalAppWidth / density);
-        /**
-         * Port end
-         */
+        outConfig.smallestScreenWidthDp = (int)(displayInfo.smallestNominalAppWidth / density);
         outConfig.screenLayout = sl;
     }
 

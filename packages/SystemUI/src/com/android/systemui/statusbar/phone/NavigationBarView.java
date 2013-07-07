@@ -459,6 +459,7 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     @Override
     public void onFinishInflate() {
         mRotatedViews[Configuration.ORIENTATION_PORTRAIT] = findViewById(R.id.rot0);
+        /** GANBAROU_PATCH_START **/
         // check properties for the selected navigation bar position. 
         // Will be centered if not selected!
 	ContentResolver resolver = mContext.getContentResolver();
@@ -471,7 +472,9 @@ Slog.d("NavBarPos","myNavBarPosSet was unknown, corrected to left");
 	}
         if (myNavBarPosSet == 0) { 
 Slog.d("NavBarPos","myNavBarPosSet case left");
+    /** GANBAROU_PATCH_END **/
                    mRotatedViews[Configuration.ORIENTATION_LANDSCAPE] = findViewById(R.id.rot90left);
+    /** GANBAROU_PATCH_START **/
 	} else if (myNavBarPosSet == 1) { 
 Slog.d("NavBarPos","myNavBarPosSet case right");
                    mRotatedViews[Configuration.ORIENTATION_LANDSCAPE] = findViewById(R.id.rot90right);
@@ -479,6 +482,7 @@ Slog.d("NavBarPos","myNavBarPosSet case right");
 Slog.d("NavBarPos","myNavBarPosSet case center");
                    mRotatedViews[Configuration.ORIENTATION_LANDSCAPE] = findViewById(R.id.rot90);
 	}
+    /** GANBAROU_PATCH_END **/
         mCurrentView = mRotatedViews[mContext.getResources().getConfiguration().orientation];
     }
 
@@ -636,6 +640,7 @@ Slog.d("NavBarPos","myNavBarPosSet case center");
         pw.println("    }");
     }
 
+    /** GANBAROU_PATCH_START **/
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -644,17 +649,9 @@ Slog.d("NavBarPos","myNavBarPosSet case center");
         void observe() {
             // Observe all users' changes
             ContentResolver resolver = mContext.getContentResolver();
-            /**
-             * Forward Port Tablet UI toggle
-             * TODO: Fix DateView
-             * Original Patch by Scott Brady <sbradymobile@gmail.com>
-             * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
-             */
             resolver.registerContentObserver(Settings.System.getUriFor(
                 Settings.System.NAV_BAR_POS), false, this);
-            /**
-             * Port end
-             */
         }
     }
+    /** GANBAROU_PATCH_END **/
 }

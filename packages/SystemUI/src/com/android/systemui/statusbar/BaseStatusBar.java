@@ -39,16 +39,9 @@ import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.ActivityNotFoundException;
-/**
- * Forward Port Tablet UI toggle
- * TODO: Fix DateView
- * Original Patch by Scott Brady <sbradymobile@gmail.com>
- * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
- */
+/** GANBAROU_PATCH_START **/
 import android.content.ContentResolver;
-/**
- * Port end
- */
+/** GANBAROU_PATCH_END **/
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -236,17 +229,10 @@ public abstract class BaseStatusBar extends SystemUI implements
     };
 
     public void start() {
-        /**
-         * Forward Port Tablet UI toggle
-         * TODO: Fix DateView
-         * Original Patch by Scott Brady <sbradymobile@gmail.com>
-         * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
-         */
+        /** GANBAROU_PATCH_START **/
         SettingsObserver observer = new SettingsObserver(mHandler);
         observer.observe(mContext);
-        /**
-         * Port end
-         */
+        /** GANBAROU_PATCH_END **/
         mWindowManager = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
         mWindowManagerService = WindowManagerGlobal.getWindowManagerService();
         mDisplay = mWindowManager.getDefaultDisplay();
@@ -968,7 +954,7 @@ public abstract class BaseStatusBar extends SystemUI implements
                 public void run() {
                     animateCollapsePanels(CommandQueue.FLAG_EXCLUDE_NONE);
                 }
-            }, 100);
+            }, 225);
         }
 
         return entry.notification;
@@ -1221,12 +1207,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         KeyguardManager km = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
         return km.inKeyguardRestrictedInputMode();
     }
-    /**
-     * Forward Port Tablet UI toggle
-     * TODO: Fix DateView
-     * Original Patch by Scott Brady <sbradymobile@gmail.com>
-     * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
-     */
+    /** GANBAROU_PATCH_START **/
     private static class SettingsObserver extends ContentObserver {
         private Handler mHandler;
 
@@ -1238,8 +1219,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         void observe(Context context) {
             ContentResolver resolver = context.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-                Settings.System.TABLET_MODE), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                 Settings.System.NAV_BAR_POS), false, this);
         }
 
@@ -1248,9 +1227,7 @@ public abstract class BaseStatusBar extends SystemUI implements
             android.os.Process.killProcess(android.os.Process.myPid());
         }
     };
-    /**
-     * Port end
-     */
+    /** GANBAROU_PATCH_END **/
 
     public int getExpandedDesktopMode() {
         ContentResolver resolver = mContext.getContentResolver();

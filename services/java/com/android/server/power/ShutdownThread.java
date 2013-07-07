@@ -150,6 +150,7 @@ public final class ShutdownThread extends Thread {
                 sConfirmDialog = null;
             }
 
+            /** GANBAROU_PATCH_START **/
             /* Ganbarou ROM offers reboot and recovery on top level of power menu */
             if (mReboot && !mRebootSafeMode){
             /*
@@ -199,6 +200,7 @@ public final class ShutdownThread extends Thread {
                         .setNegativeButton(com.android.internal.R.string.no, null)
                         .create();
             } else { 
+            /** GANBAROU_PATCH_END **/
                 sConfirmDialog = new AlertDialog.Builder(context)
                         .setTitle(titleResourceId)
                         .setMessage(resourceId)
@@ -255,6 +257,7 @@ public final class ShutdownThread extends Thread {
      * @param reason code to pass to the kernel (e.g. "recovery"), or null.
      * @param confirm true if user confirmation is needed before shutting down.
      */
+     /** GANBAROU_PATCH_START **/
      //
      // In Ganbarou ROM the reboot is direct available from top level power menu
      //
@@ -300,6 +303,7 @@ public final class ShutdownThread extends Thread {
         mReboot = true;
         mRebootSafeMode = false;
         mRebootReason = "bootloader";
+    /** GANBAROU_PATCH_END **/
         shutdownInner(context, confirm);
     }
 

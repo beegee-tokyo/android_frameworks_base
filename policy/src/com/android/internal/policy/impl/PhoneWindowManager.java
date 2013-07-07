@@ -68,16 +68,6 @@ import android.os.UEventObserver;
 import android.os.UserHandle;
 import android.os.Vibrator;
 import android.provider.Settings;
-/**
- * Forward Port Tablet UI toggle
- * TODO: Fix DateView
- * Original Patch by Scott Brady <sbradymobile@gmail.com>
- * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
- */
-import android.os.Build;
-/**
- * Port end
- */
 
 import com.android.internal.R;
 import com.android.internal.app.ThemeUtils;
@@ -320,7 +310,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     int mStatusBarHeight;
     WindowState mNavigationBar = null;
     boolean mHasNavigationBar = false;
-    boolean tabletModeOverride = false;
     boolean mCanHideNavigationBar = false;
     boolean mNavigationBarCanMove = false; // can the navigation bar ever move to the side?
     boolean mNavigationBarOnBottom = true; // is the navigation bar on the bottom *right now*?
@@ -699,17 +688,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.HARDWARE_KEY_REBINDING), false, this,
                     UserHandle.USER_ALL);
-            /**
-             * Forward Port Tablet UI toggle
-             * TODO: Fix DateView
-             * Original Patch by Scott Brady <sbradymobile@gmail.com>
-             * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
-             */
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                Settings.System.TABLET_MODE), false, this);
-            /**
-             * Port end
-             */
+
             updateSettings();
         }
 
@@ -1294,42 +1273,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         // SystemUI (status bar) layout policy
         int shortSizeDp = shortSize * DisplayMetrics.DENSITY_DEFAULT / density;
 
-        /**
-         * Forward Port Tablet UI toggle
-         * TODO: Fix DateView
-         * Original Patch by Scott Brady <sbradymobile@gmail.com>
-         * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
-         */
-        ContentResolver resolver = mContext.getContentResolver();
-        tabletModeOverride = Settings.System.getInt(resolver,
-            Settings.System.TABLET_MODE, 0) == 1;
-//Slog.d("TabletUI", "tabletModeOverride at setInitialDisplaySize = "+tabletModeOverride);
-//Slog.d("TabletUI", "shortSizeDp at setInitialDisplaySize = "+Integer.toString(shortSizeDp));
-
-        if (shortSizeDp < 600 && !tabletModeOverride) {
-            // 0-599dp: "phone" UI with a separate status & navigation bar
-//Slog.d("TabletUI", "shortSizeDp < 600 && !tabletModeOverride");
-//Slog.d("TabletUI", "mHasSystemNavBar = false");
-//Slog.d("TabletUI", "mNavigationBarCanMove = true");
-            mHasSystemNavBar = false;
-            mNavigationBarCanMove = true;
-//        } else if (shortSizeDp < 720 && !tabletModeOverride) {
-        } else if (!tabletModeOverride) {
-            // 600+dp: "phone" UI with modifications for larger screens
-//Slog.d("TabletUI", "!tabletModeOverride");
-//Slog.d("TabletUI", "mHasSystemNavBar = false");
-//Slog.d("TabletUI", "mNavigationBarCanMove = false");
-            mHasSystemNavBar = false;
-            mNavigationBarCanMove = false;
-        } else {
-            // forced "tablet" UI with a single combined status & navigation bar
-//Slog.d("TabletUI", "shortSizeDp => 600 || tabletModeOverride");
-//Slog.d("TabletUI", "mHasSystemNavBar = true");
-//Slog.d("TabletUI", "mNavigationBarCanMove = false");
-            mHasSystemNavBar = true;
-            mNavigationBarCanMove = false;
-        }
-        /*
         if (shortSizeDp < 600) {
             // 0-599dp: "phone" UI with a separate status & navigation bar
             mHasSystemNavBar = false;
@@ -1339,10 +1282,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mHasSystemNavBar = false;
             mNavigationBarCanMove = false;
         }
-        */
-        /**
-         * Port end
-         */
 
         if (!mHasSystemNavBar) {
             mHasNavigationBar = mContext.getResources().getBoolean(
@@ -1890,13 +1829,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     public int getNonDecorDisplayWidth(int fullWidth, int fullHeight, int rotation) {
-
-//Slog.d("TabletUI", "mHasNavigationBar = "+mHasNavigationBar);
         if (mHasNavigationBar && !expandedDesktopHidesNavigationBar()) {
             // For a basic navigation bar, when we are in landscape mode we place
             // the navigation bar to the side.
-//Slog.d("TabletUI", "mNavigationBarCanMove = "+mNavigationBarCanMove);
-//Slog.d("TabletUI", "fullWidth > fullHeight = "+fullWidth+" - "+fullHeight);
             if (mNavigationBarCanMove && fullWidth > fullHeight) {
                 return fullWidth - mNavigationBarWidthForRotation[rotation];
             }
@@ -3044,11 +2979,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 mContentLeft = mCurLeft = mDockLeft;
                 mContentRight = mCurRight = mDockRight;
                 mStatusBarLayer = mNavigationBar.getSurfaceLayer();
-//Slog.d("NavBar", "mContentTop = mCurTop = mDockTop = "+mDockTop);
-//Slog.d("NavBar", "mContentBottom = mCurBottom = mDockBottom = "+mDockBottom);
-//Slog.d("NavBar", "mContentLeft = mCurLeft = mDockLeft = "+mDockLeft);
-//Slog.d("NavBar", "mContentRight = mCurRight = mDockRight = "+mDockRight);
-                 // And compute the final frame.
+                // And compute the final frame.
                 mNavigationBar.computeFrameLw(mTmpNavigationFrame, mTmpNavigationFrame,
                         mTmpNavigationFrame, mTmpNavigationFrame);
                 if (DEBUG_LAYOUT) Log.i(TAG, "mNavigationBar frame: " + mTmpNavigationFrame);
@@ -5296,11 +5227,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // Use this instead of checking config_showNavigationBar so that it can be consistently
     // overridden by qemu.hw.mainkeys in the emulator.
     public boolean hasNavigationBar() {
-	if (tabletModeOverride) {
-		return true;
-	} else {
-        	return mHasNavigationBar;
-	}
+        return mHasNavigationBar;
     }
 
     @Override

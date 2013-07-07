@@ -1328,23 +1328,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     }
 
     public void showClock(boolean show) {
-        if (mStatusBarView == null) return;
-        ContentResolver resolver = mContext.getContentResolver();
-        /**
-         * Forward Port Tablet UI toggle
-         * TODO: Fix DateView
-         * Original Patch by Scott Brady <sbradymobile@gmail.com>
-         * Change-Id: Ibc688afd5e643165a2ceeba9f832ed50e6af3715
-         */
-        // View clock = mStatusBarView.findViewById(R.id.clock);
-        TextView clock = (TextView) mStatusBarView.findViewById(R.id.clock);
-        /**
-         * Port end
-         */
-        mShowClock = (Settings.System.getInt(resolver,
-                Settings.System.STATUS_BAR_CLOCK, 1) == 1);
-        if (clock != null) {
-        //    clock.setVisibility(show ? (mShowClock ? View.VISIBLE : View.GONE) : View.GONE);
+        if (mClock != null) {
             mClock.setHidden(!show);
         }
     }
@@ -2793,7 +2777,8 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         makeStatusBarView();
         repositionNavigationBar();
-        mNavigationBarView.updateResources();
+        if (mNavigationBarView != null)
+            mNavigationBarView.updateResources();
 
         // recreate StatusBarIconViews.
         for (int i = 0; i < nIcons; i++) {

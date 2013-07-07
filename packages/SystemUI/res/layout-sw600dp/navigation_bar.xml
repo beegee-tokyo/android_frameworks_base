@@ -138,7 +138,6 @@
             android:id="@+id/container"
             >
             <include layout="@layout/mid_navigation_bar_land"/>
-
         </LinearLayout>
 
                 <!-- lights out layout to match exactly -->
