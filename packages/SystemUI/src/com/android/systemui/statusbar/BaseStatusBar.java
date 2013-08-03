@@ -39,9 +39,6 @@ import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.ActivityNotFoundException;
-/** GANBAROU_PATCH_START **/
-import android.content.ContentResolver;
-/** GANBAROU_PATCH_END **/
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -211,17 +208,27 @@ public abstract class BaseStatusBar extends SystemUI implements
     private class SettingsObserver extends ContentObserver {
         public SettingsObserver(Handler handler) {
             super(handler);
+    /** GANBAROU_PATCH_START **/
+//            mHandler = handler;
+    /** GANBAROU_PATCH_END **/
         }
 
         public void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_COLLAPSE_ON_DISMISS), false, this);
+    /** GANBAROU_PATCH_START **/
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.NAV_BAR_POS), false, this);
+    /** GANBAROU_PATCH_END **/
             update();
         }
 
         @Override
         public void onChange(boolean selfChange) {
+    /** GANBAROU_PATCH_START **/
+            android.os.Process.killProcess(android.os.Process.myPid());
+    /** GANBAROU_PATCH_END **/
             update();
         }
 
@@ -268,10 +275,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     };
 
     public void start() {
-        /** GANBAROU_PATCH_START **/
-        SettingsObserver observer = new SettingsObserver(mHandler);
-        observer.observe(mContext);
-        /** GANBAROU_PATCH_END **/
         mWindowManager = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
         mWindowManagerService = WindowManagerGlobal.getWindowManagerService();
         mDisplay = mWindowManager.getDefaultDisplay();
@@ -1265,27 +1268,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         KeyguardManager km = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
         return km.inKeyguardRestrictedInputMode();
     }
-    /** GANBAROU_PATCH_START **/
-    private static class SettingsObserver extends ContentObserver {
-        private Handler mHandler;
-
-        SettingsObserver(Handler handler) {
-            super(handler);
-            mHandler = handler;
-        }
-
-        void observe(Context context) {
-            ContentResolver resolver = context.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                Settings.System.NAV_BAR_POS), false, this);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            android.os.Process.killProcess(android.os.Process.myPid());
-        }
-    };
-    /** GANBAROU_PATCH_END **/
 
     public int getExpandedDesktopMode() {
         ContentResolver resolver = mContext.getContentResolver();
