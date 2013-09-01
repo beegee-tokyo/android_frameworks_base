@@ -22,6 +22,9 @@ import android.content.res.Configuration;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.statusbar.StatusBarIconList;
+/* Generates problem GANBAROU PATCH START
+import com.android.internal.statusbar.StatusBarNotification;
+GANBAROU PATCH END */
 import com.android.internal.widget.SizeAdaptiveLayout;
 import com.android.systemui.R;
 import com.android.systemui.SearchPanelView;
@@ -47,6 +50,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
@@ -220,11 +224,18 @@ public abstract class BaseStatusBar extends SystemUI implements
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_COLLAPSE_ON_DISMISS), false, this);
+    /** GANBAROU_PATCH_START **/
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.NAV_BAR_POS), false, this);
+    /** GANBAROU_PATCH_END **/
             update();
         }
 
         @Override
         public void onChange(boolean selfChange) {
+    /** GANBAROU_PATCH_START **/
+            android.os.Process.killProcess(android.os.Process.myPid());
+    /** GANBAROU_PATCH_END **/
             update();
         }
 

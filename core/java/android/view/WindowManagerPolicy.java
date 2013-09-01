@@ -421,6 +421,10 @@ public interface WindowManagerPolicy {
         public void shutdown(boolean confirm);
         public void rebootSafeMode(boolean confirm);
         public void reboot();
+        /** GANBAROU_PATCH_START **/
+	    public void recovery();
+        public void bootloader();
+        /** GANBAROU_PATCH_END **/
     }
 
     /** Window has been added to the screen. */

@@ -45,6 +45,12 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+// **** GANBAROU_PATCH_START ****
+import android.database.ContentObserver;
+import android.content.ContentResolver;
+import android.provider.Settings;
+// **** GANBAROU_PATCH_END ****
+
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 
@@ -457,7 +463,30 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     @Override
     public void onFinishInflate() {
         mRotatedViews[Configuration.ORIENTATION_PORTRAIT] = findViewById(R.id.rot0);
-        mRotatedViews[Configuration.ORIENTATION_LANDSCAPE] = findViewById(R.id.rot90);
+        /** GANBAROU_PATCH_START **/
+        // check properties for the selected navigation bar position. 
+        // Will be centered if not selected!
+	ContentResolver resolver = mContext.getContentResolver();
+	int myNavBarPosSet = Settings.System.getInt(resolver, Settings.System.NAV_BAR_POS, 3);
+
+Slog.d("NavBarPos","navbar_pos_set = "+myNavBarPosSet);
+        if (myNavBarPosSet == 3) { 
+		myNavBarPosSet = 0;
+Slog.d("NavBarPos","myNavBarPosSet was unknown, corrected to left");
+	}
+        if (myNavBarPosSet == 0) { 
+Slog.d("NavBarPos","myNavBarPosSet case left");
+    /** GANBAROU_PATCH_END **/
+                   mRotatedViews[Configuration.ORIENTATION_LANDSCAPE] = findViewById(R.id.rot90left);
+    /** GANBAROU_PATCH_START **/
+	} else if (myNavBarPosSet == 1) { 
+Slog.d("NavBarPos","myNavBarPosSet case right");
+                   mRotatedViews[Configuration.ORIENTATION_LANDSCAPE] = findViewById(R.id.rot90right);
+	} else {
+Slog.d("NavBarPos","myNavBarPosSet case center");
+                   mRotatedViews[Configuration.ORIENTATION_LANDSCAPE] = findViewById(R.id.rot90);
+	}
+    /** GANBAROU_PATCH_END **/
         mCurrentView = mRotatedViews[mContext.getResources().getConfiguration().orientation];
     }
 
@@ -615,4 +644,18 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
         pw.println("    }");
     }
 
+    /** GANBAROU_PATCH_START **/
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            // Observe all users' changes
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.NAV_BAR_POS), false, this);
+        }
+    }
+    /** GANBAROU_PATCH_END **/
 }
