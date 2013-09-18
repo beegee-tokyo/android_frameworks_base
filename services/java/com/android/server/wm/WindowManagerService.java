@@ -9336,6 +9336,7 @@ public class WindowManagerService extends IWindowManager.Stub
     void scheduleAnimationLocked() {
         if (!mAnimationScheduled) {
             mAnimationScheduled = true;
+            mPolicy.windowAnimationStarted();
             mChoreographer.postCallback(
                     Choreographer.CALLBACK_ANIMATION, mAnimator.mAnimationRunnable, null);
         }
@@ -9995,6 +9996,15 @@ public class WindowManagerService extends IWindowManager.Stub
         }
 
         if (changed) {
+            final int[] anim = new int[2];
+            if (mAnimator.isDimmingLocked(Display.DEFAULT_DISPLAY)) {
+                anim[0] = anim[1] = 0;
+            } else {
+                mPolicy.selectDisplayMetricsUpdateAnimationLw(anim);
+            }
+
+            mWaitingForConfig = true;
+            startFreezingDisplayLocked(false, anim[0], anim[1]);
             mH.sendEmptyMessage(H.SEND_NEW_CONFIGURATION);
         }
 

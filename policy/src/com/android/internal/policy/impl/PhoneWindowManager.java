@@ -337,6 +337,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // Behavior of volbtn music controls
     boolean mVolBtnMusicControls;
     boolean mIsLongPress;
+    private boolean mAnimatingWindows;
+    private boolean mNeedUpdateSettings;
 
     private static final class PointerLocationInputEventReceiver extends InputEventReceiver {
         private final PointerLocationView mView;
@@ -661,8 +663,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
 
         @Override public void onChange(boolean selfChange) {
-            updateSettings();
-            updateRotation(false);
+            // A settings update potentially means triggering a configuration change,
+            // which we don't want to do during a window animation
+            if (mAnimatingWindows) {
+                mNeedUpdateSettings = true;
+            } else {
+                updateSettings();
+                updateRotation(false);
+            }
         }
     }
     
@@ -2175,6 +2183,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     @Override
+    public void selectDisplayMetricsUpdateAnimationLw(int anim[]) {
+        anim[0] = R.anim.shrink_fade_out_center;
+        anim[1] = R.anim.grow_fade_in_center;
+    }
+
+    @Override
     public boolean validateRotationAnimationLw(int exitAnimId, int enterAnimId,
             boolean forceDefault) {
         switch (exitAnimId) {
@@ -3116,8 +3130,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     }
                 } else {
                     // Landscape screen; nav bar goes to the right.
-                    int left = displayWidth - overscanRight
-                            - mNavigationBarWidthForRotation[displayRotation];
+                    int left = displayWidth - overscanRight - navWidth;
                     mTmpNavigationFrame.set(left, 0, displayWidth - overscanRight, displayHeight);
                     mStableRight = mStableFullscreenRight = mTmpNavigationFrame.left;
                     if (navVisible) {
@@ -5558,6 +5571,21 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             return (windowType == WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG);
         }
         return true;
+    }
+
+    @Override
+    public void windowAnimationStarted() {
+        mAnimatingWindows = true;
+    }
+
+    @Override
+    public void windowAnimationFinished() {
+        mAnimatingWindows = false;
+        if (mNeedUpdateSettings) {
+            updateSettings();
+            updateRotation(false);
+            mNeedUpdateSettings = false;
+        }
     }
 
     @Override
