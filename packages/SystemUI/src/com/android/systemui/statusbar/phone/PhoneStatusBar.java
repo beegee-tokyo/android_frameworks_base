@@ -305,6 +305,13 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     DisplayMetrics mDisplayMetrics = new DisplayMetrics();
 
+/** GANBAROU_PATCH_START **/
+    View mTop_recent;
+    View mTop_home;
+    View mTop_back;
+    View mTop_menu;
+/** GANBAROU_PATCH_END **/
+    
     // XXX: gesture research
     private final GestureRecorder mGestureRec = DEBUG_GESTURES
         ? new GestureRecorder("/sdcard/statusbar_gestures.dat")
@@ -495,6 +502,31 @@ public class PhoneStatusBar extends BaseStatusBar {
         mStatusBarView = (PhoneStatusBarView) mStatusBarWindow.findViewById(R.id.status_bar);
         mStatusBarView.setBar(this);
 
+/** GANBAROU_PATCH_START **/
+/** Check if we are in Expanded Desktop Mode and enable Navigation buttons if we area
+    and disable them when the bottom navigation bar is visible 
+    but if we are not a tablet, just ignore this! **/
+	if (mNavigationBarView != null) {
+	    //Slog.d("TopNavBar", "getExpandedDesktopMode = " + (getExpandedDesktopMode()));
+	    mTop_recent = mStatusBarWindow.findViewById(R.id.top_recent);
+	    mTop_home = mStatusBarWindow.findViewById(R.id.top_home);
+	    mTop_back = mStatusBarWindow.findViewById(R.id.top_back);
+	    mTop_menu = mStatusBarWindow.findViewById(R.id.top_menu);
+	    if (getExpandedDesktopMode() == 1) {
+		//Slog.d("TopNavBar", "Switch nav buttons on (makeStatusBarView)");
+		mTop_recent.setVisibility(View.VISIBLE);
+		mTop_home.setVisibility(View.VISIBLE);
+		mTop_back.setVisibility(View.VISIBLE);
+		mTop_menu.setVisibility(View.VISIBLE);
+	    } else {
+		//Slog.d("TopNavBar", "Switch nav buttons off (makeStatusBarView)");
+		mTop_recent.setVisibility(View.GONE);
+		mTop_home.setVisibility(View.GONE);
+		mTop_back.setVisibility(View.GONE);
+		mTop_menu.setVisibility(View.GONE);
+	    }
+        }
+/** GANBAROU_PATCH_END **/
 
         PanelHolder holder = (PanelHolder) mStatusBarWindow.findViewById(R.id.panel_holder);
         mStatusBarView.setPanelHolder(holder);
@@ -2622,6 +2654,31 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
 
         updateCarrierLabelVisibility(false);
+/** GANBAROU_PATCH_START **/
+/** Check if we are in Expanded Desktop Mode and enable Navigation buttons if we area
+    and disable them when the bottom navigation bar is visible 
+    but if we are not a tablet, just ignore this! **/
+	if (mNavigationBarView != null) {
+	  // Slog.d("TopNavBar", "getExpandedDesktopMode = " + (getExpandedDesktopMode()));
+	  mTop_recent = mStatusBarWindow.findViewById(R.id.top_recent);
+	  mTop_home = mStatusBarWindow.findViewById(R.id.top_home);
+	  mTop_back = mStatusBarWindow.findViewById(R.id.top_back);
+	  mTop_menu = mStatusBarWindow.findViewById(R.id.top_menu);
+	  if (getExpandedDesktopMode() == 1) {
+	      // Slog.d("TopNavBar", "Switch nav buttons on (updateExpandedViewPos)");
+	      mTop_recent.setVisibility(View.VISIBLE);
+	      mTop_home.setVisibility(View.VISIBLE);
+	      mTop_back.setVisibility(View.VISIBLE);
+	      mTop_menu.setVisibility(View.VISIBLE);
+	  } else {
+	      // Slog.d("TopNavBar", "Switch nav buttons off (updateExpandedViewPos)");
+	      mTop_recent.setVisibility(View.GONE);
+	      mTop_home.setVisibility(View.GONE);
+	      mTop_back.setVisibility(View.GONE);
+	      mTop_menu.setVisibility(View.GONE);
+	  }
+	}
+/** GANBAROU_PATCH_END **/
     }
 
     // called by makeStatusbar and also by PhoneStatusBarView
