@@ -310,6 +310,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     View mTop_home;
     View mTop_back;
     View mTop_menu;
+    int mStatusBarNav;
 /** GANBAROU_PATCH_END **/
     
     // XXX: gesture research
@@ -362,6 +363,10 @@ public class PhoneStatusBar extends BaseStatusBar {
                     Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this);
+/** GANBAROU_PATCH_START **/
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_NAVIGATION), false, this);
+/** GANBAROU_PATCH_END **/
             update();
         }
 
@@ -378,6 +383,12 @@ public class PhoneStatusBar extends BaseStatusBar {
                     && Settings.System.getIntForUser(resolver,
                             Settings.System.STATUS_BAR_BRIGHTNESS_CONTROL,
                             0, UserHandle.USER_CURRENT) == 1;
+/** GANBAROU_PATCH_START **/
+	    mStatusBarNav = Settings.System.getIntForUser(resolver,
+                    Settings.System.STATUS_BAR_NAVIGATION, 0, UserHandle.USER_CURRENT);
+            updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
+//Slog.d("TopNavBar", "get current value mStatusBarNav = " + mStatusBarNav);
+/** GANBAROU_PATCH_END **/
         }
     }
 
@@ -505,27 +516,30 @@ public class PhoneStatusBar extends BaseStatusBar {
 /** GANBAROU_PATCH_START **/
 /** Check if we are in Expanded Desktop Mode and enable Navigation buttons if we area
     and disable them when the bottom navigation bar is visible 
+    but only if the user enabled it in settings
     but if we are not a tablet, just ignore this! **/
-	if (mNavigationBarView != null) {
-	    //Slog.d("TopNavBar", "getExpandedDesktopMode = " + (getExpandedDesktopMode()));
-	    mTop_recent = mStatusBarWindow.findViewById(R.id.top_recent);
-	    mTop_home = mStatusBarWindow.findViewById(R.id.top_home);
-	    mTop_back = mStatusBarWindow.findViewById(R.id.top_back);
-	    mTop_menu = mStatusBarWindow.findViewById(R.id.top_menu);
-	    if (getExpandedDesktopMode() == 1) {
-		//Slog.d("TopNavBar", "Switch nav buttons on (makeStatusBarView)");
-		mTop_recent.setVisibility(View.VISIBLE);
-		mTop_home.setVisibility(View.VISIBLE);
-		mTop_back.setVisibility(View.VISIBLE);
-		mTop_menu.setVisibility(View.VISIBLE);
-	    } else {
-		//Slog.d("TopNavBar", "Switch nav buttons off (makeStatusBarView)");
-		mTop_recent.setVisibility(View.GONE);
-		mTop_home.setVisibility(View.GONE);
-		mTop_back.setVisibility(View.GONE);
-		mTop_menu.setVisibility(View.GONE);
+	if (mStatusBarNav == 0) {
+	    if (mNavigationBarView != null) {
+//Slog.d("TopNavBar", "getExpandedDesktopMode = " + (getExpandedDesktopMode()));
+		mTop_recent = mStatusBarWindow.findViewById(R.id.top_recent);
+		mTop_home = mStatusBarWindow.findViewById(R.id.top_home);
+		mTop_back = mStatusBarWindow.findViewById(R.id.top_back);
+		mTop_menu = mStatusBarWindow.findViewById(R.id.top_menu);
+		if (getExpandedDesktopMode() == 1) {
+//Slog.d("TopNavBar", "Switch nav buttons on (makeStatusBarView)");
+		    mTop_recent.setVisibility(View.VISIBLE);
+		    mTop_home.setVisibility(View.VISIBLE);
+		    mTop_back.setVisibility(View.VISIBLE);
+		    mTop_menu.setVisibility(View.VISIBLE);
+		} else {
+//Slog.d("TopNavBar", "Switch nav buttons off (makeStatusBarView)");
+		    mTop_recent.setVisibility(View.GONE);
+		    mTop_home.setVisibility(View.GONE);
+		    mTop_back.setVisibility(View.GONE);
+		    mTop_menu.setVisibility(View.GONE);
+		}
 	    }
-        }
+	}
 /** GANBAROU_PATCH_END **/
 
         PanelHolder holder = (PanelHolder) mStatusBarWindow.findViewById(R.id.panel_holder);
@@ -2654,29 +2668,33 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
 
         updateCarrierLabelVisibility(false);
+        
 /** GANBAROU_PATCH_START **/
 /** Check if we are in Expanded Desktop Mode and enable Navigation buttons if we area
     and disable them when the bottom navigation bar is visible 
+    but only if the user enabled it in settings
     but if we are not a tablet, just ignore this! **/
-	if (mNavigationBarView != null) {
-	  // Slog.d("TopNavBar", "getExpandedDesktopMode = " + (getExpandedDesktopMode()));
-	  mTop_recent = mStatusBarWindow.findViewById(R.id.top_recent);
-	  mTop_home = mStatusBarWindow.findViewById(R.id.top_home);
-	  mTop_back = mStatusBarWindow.findViewById(R.id.top_back);
-	  mTop_menu = mStatusBarWindow.findViewById(R.id.top_menu);
-	  if (getExpandedDesktopMode() == 1) {
-	      // Slog.d("TopNavBar", "Switch nav buttons on (updateExpandedViewPos)");
-	      mTop_recent.setVisibility(View.VISIBLE);
-	      mTop_home.setVisibility(View.VISIBLE);
-	      mTop_back.setVisibility(View.VISIBLE);
-	      mTop_menu.setVisibility(View.VISIBLE);
-	  } else {
-	      // Slog.d("TopNavBar", "Switch nav buttons off (updateExpandedViewPos)");
-	      mTop_recent.setVisibility(View.GONE);
-	      mTop_home.setVisibility(View.GONE);
-	      mTop_back.setVisibility(View.GONE);
-	      mTop_menu.setVisibility(View.GONE);
-	  }
+	if (mStatusBarNav == 0) {
+	    if (mNavigationBarView != null) {
+//Slog.d("TopNavBar", "getExpandedDesktopMode = " + (getExpandedDesktopMode()));
+		mTop_recent = mStatusBarWindow.findViewById(R.id.top_recent);
+		mTop_home = mStatusBarWindow.findViewById(R.id.top_home);
+		mTop_back = mStatusBarWindow.findViewById(R.id.top_back);
+		mTop_menu = mStatusBarWindow.findViewById(R.id.top_menu);
+		if (getExpandedDesktopMode() == 1) {
+//Slog.d("TopNavBar", "Switch nav buttons on (makeStatusBarView)");
+		    mTop_recent.setVisibility(View.VISIBLE);
+		    mTop_home.setVisibility(View.VISIBLE);
+		    mTop_back.setVisibility(View.VISIBLE);
+		    mTop_menu.setVisibility(View.VISIBLE);
+		} else {
+//Slog.d("TopNavBar", "Switch nav buttons off (makeStatusBarView)");
+		    mTop_recent.setVisibility(View.GONE);
+		    mTop_home.setVisibility(View.GONE);
+		    mTop_back.setVisibility(View.GONE);
+		    mTop_menu.setVisibility(View.GONE);
+		}
+	    }
 	}
 /** GANBAROU_PATCH_END **/
     }

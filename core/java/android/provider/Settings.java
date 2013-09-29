@@ -2849,6 +2849,15 @@ public final class Settings {
          */
         public static final String STATUS_BAR_BRIGHTNESS_CONTROL = "status_bar_brightness_control";
 
+/** GANBAROU_PATCH_START **/
+         /**
+         * Whether to enable navigation on the  status bar
+         *
+         * @hide
+         */
+        public static final String STATUS_BAR_NAVIGATION = "status_bar_navigation";
+/** GANBAROU_PATCH_END **/
+
         /**
          * Whether to show the IME switcher in the status bar
          * @hide
