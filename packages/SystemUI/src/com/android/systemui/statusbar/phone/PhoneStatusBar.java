@@ -518,13 +518,16 @@ public class PhoneStatusBar extends BaseStatusBar {
     and disable them when the bottom navigation bar is visible 
     but only if the user enabled it in settings
     but if we are not a tablet, just ignore this! **/
-	if (mStatusBarNav == 0) {
-	    if (mNavigationBarView != null) {
+
+	if (mNavigationBarView != null) { /** Does the device show a navigation bar at all? **/
+//Slog.d("TopNavBar", "mNavigationBarView != null" + mNavigationBarView);
+	    mTop_recent = mStatusBarWindow.findViewById(R.id.top_recent);
+	    mTop_home = mStatusBarWindow.findViewById(R.id.top_home);
+	    mTop_back = mStatusBarWindow.findViewById(R.id.top_back);
+	    mTop_menu = mStatusBarWindow.findViewById(R.id.top_menu);
+	    if (mStatusBarNav == 0) { /** Is the navigation in the status bar enabled? **/
+//Slog.d("TopNavBar", "mStatusBarNav == 0" + mStatusBarNav);
 //Slog.d("TopNavBar", "getExpandedDesktopMode = " + (getExpandedDesktopMode()));
-		mTop_recent = mStatusBarWindow.findViewById(R.id.top_recent);
-		mTop_home = mStatusBarWindow.findViewById(R.id.top_home);
-		mTop_back = mStatusBarWindow.findViewById(R.id.top_back);
-		mTop_menu = mStatusBarWindow.findViewById(R.id.top_menu);
 		if (getExpandedDesktopMode() == 1) {
 //Slog.d("TopNavBar", "Switch nav buttons on (makeStatusBarView)");
 		    mTop_recent.setVisibility(View.VISIBLE);
@@ -538,6 +541,12 @@ public class PhoneStatusBar extends BaseStatusBar {
 		    mTop_back.setVisibility(View.GONE);
 		    mTop_menu.setVisibility(View.GONE);
 		}
+	    } else { /** Navigation in the status bar is disabled? **/
+//Slog.d("TopNavBar", "Switch nav buttons off (makeStatusBarView)");
+		mTop_recent.setVisibility(View.GONE);
+		mTop_home.setVisibility(View.GONE);
+		mTop_back.setVisibility(View.GONE);
+		mTop_menu.setVisibility(View.GONE);
 	    }
 	}
 /** GANBAROU_PATCH_END **/
@@ -2674,13 +2683,16 @@ public class PhoneStatusBar extends BaseStatusBar {
     and disable them when the bottom navigation bar is visible 
     but only if the user enabled it in settings
     but if we are not a tablet, just ignore this! **/
-	if (mStatusBarNav == 0) {
-	    if (mNavigationBarView != null) {
+
+	if (mNavigationBarView != null) { /** Does the device show a navigation bar at all? **/
+//Slog.d("TopNavBar", "mNavigationBarView != null" + mNavigationBarView);
+	    mTop_recent = mStatusBarWindow.findViewById(R.id.top_recent);
+	    mTop_home = mStatusBarWindow.findViewById(R.id.top_home);
+	    mTop_back = mStatusBarWindow.findViewById(R.id.top_back);
+	    mTop_menu = mStatusBarWindow.findViewById(R.id.top_menu);
+	    if (mStatusBarNav == 0) { /** Is the navigation in the status bar enabled? **/
+//Slog.d("TopNavBar", "mStatusBarNav == 0" + mStatusBarNav);
 //Slog.d("TopNavBar", "getExpandedDesktopMode = " + (getExpandedDesktopMode()));
-		mTop_recent = mStatusBarWindow.findViewById(R.id.top_recent);
-		mTop_home = mStatusBarWindow.findViewById(R.id.top_home);
-		mTop_back = mStatusBarWindow.findViewById(R.id.top_back);
-		mTop_menu = mStatusBarWindow.findViewById(R.id.top_menu);
 		if (getExpandedDesktopMode() == 1) {
 //Slog.d("TopNavBar", "Switch nav buttons on (makeStatusBarView)");
 		    mTop_recent.setVisibility(View.VISIBLE);
@@ -2694,6 +2706,12 @@ public class PhoneStatusBar extends BaseStatusBar {
 		    mTop_back.setVisibility(View.GONE);
 		    mTop_menu.setVisibility(View.GONE);
 		}
+	    } else { /** Navigation in the status bar is disabled? **/
+//Slog.d("TopNavBar", "Switch nav buttons off (makeStatusBarView)");
+		mTop_recent.setVisibility(View.GONE);
+		mTop_home.setVisibility(View.GONE);
+		mTop_back.setVisibility(View.GONE);
+		mTop_menu.setVisibility(View.GONE);
 	    }
 	}
 /** GANBAROU_PATCH_END **/
