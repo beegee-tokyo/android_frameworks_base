@@ -200,7 +200,7 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/gan_ic_sysbar_menu"
                 systemui:keyCode="82"
-                
+                android:visibility="gone"
                 android:contentDescription="@string/accessibility_menu"
                 systemui:glowBackground="@drawable/ic_sysbar_highlight"
                 android:gravity="center_vertical|left"
