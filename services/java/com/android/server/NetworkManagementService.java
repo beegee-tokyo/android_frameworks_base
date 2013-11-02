@@ -60,7 +60,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Slog;
 import android.util.SparseBooleanArray;
-import java.util.List;
 
 import com.android.internal.net.NetworkStatsFactory;
 import com.android.internal.util.Preconditions;
@@ -134,7 +133,6 @@ public class NetworkManagementService extends INetworkManagementService.Stub
         public static final int TetheringStatsResult      = 221;
         public static final int DnsProxyQueryResult       = 222;
         public static final int ClatdStatusResult         = 223;
-        public static final int V6RtrAdvResult            = 224;
 
         public static final int InterfaceChange           = 600;
         public static final int BandwidthControl          = 601;
@@ -492,39 +490,6 @@ public class NetworkManagementService extends INetworkManagementService.Stub
                     mConnector.executeForList("interface", "list"), InterfaceListResult);
         } catch (NativeDaemonConnectorException e) {
             throw e.rethrowAsParcelableException();
-        }
-    }
-
-    @Override
-    public void addUpstreamV6Interface(String iface) throws IllegalStateException {
-        mContext.enforceCallingOrSelfPermission(
-                android.Manifest.permission.ACCESS_NETWORK_STATE, "NetworkManagementService");
-
-        Slog.d(TAG, "addUpstreamInterface("+ iface + ")");
-        try {
-            final Command cmd = new Command("tether", "interface", "add_upstream");
-            cmd.appendArg(iface);
-            mConnector.execute(cmd);
-        } catch (NativeDaemonConnectorException e) {
-            throw new IllegalStateException("Cannot add upstream interface");
-        }
-    }
-
-    @Override
-    public void removeUpstreamV6Interface(String iface) throws IllegalStateException {
-        mContext.enforceCallingOrSelfPermission(
-                android.Manifest.permission.ACCESS_NETWORK_STATE, "NetworkManagementService");
-
-        Slog.d(TAG, "removeUpstreamInterface(" + iface + ")");
-
-        try {
-            final Command cmd = new Command("tether", "interface", "add_upstream");
-            cmd.appendArg(iface);
-            mConnector.execute(cmd);
-
-            mConnector.execute(cmd);
-        } catch (NativeDaemonConnectorException e) {
-            throw new IllegalStateException("Cannot remove upstream interface");
         }
     }
 
@@ -1082,87 +1047,6 @@ public class NetworkManagementService extends INetworkManagementService.Stub
         }
     }
 
-     /*Set SAP Channel Range*/
-    public void setChannelRange(int startchannel, int endchannel, int band)
-            throws IllegalStateException {
-        mContext.enforceCallingOrSelfPermission(
-           android.Manifest.permission.CHANGE_NETWORK_STATE, "NetworkManagementService");
-        mContext.enforceCallingOrSelfPermission(
-           android.Manifest.permission.CHANGE_WIFI_STATE, "NetworkManagementService");
-        try {
-            Slog.d(TAG, "Set SAP Channel Range");
-            mConnector.execute(
-            "softap", "qccmd", "set", "setchannelrange=", startchannel, " ", endchannel, " ", band);
-        } catch (NativeDaemonConnectorException e) {
-              throw new IllegalStateException(
-                   "Error communicating to native daemon to set channel range", e);
-        }
-    }
-
-     /*Get SAP Operating Channel*/
-    public int getSapOperatingChannel() throws IllegalStateException{
-        mContext.enforceCallingOrSelfPermission(
-            android.Manifest.permission.CHANGE_NETWORK_STATE, "NetworkManagementService");
-        mContext.enforceCallingOrSelfPermission(
-            android.Manifest.permission.CHANGE_WIFI_STATE, "NetworkManagementService");
-        int channel=0;
-        try {
-            final NativeDaemonEvent OperChanResp;
-            Slog.d(TAG, "getSapOperatingChannel");
-            OperChanResp = mConnector.execute("softap", "qccmd", "get", "channel");
-            Slog.d(TAG, "getSapOperatingChannel--OperChanResp" + OperChanResp);
-
-            //Resp Pattern : 200 8 success channel=6
-            final StringTokenizer tok = new StringTokenizer(OperChanResp.getMessage());
-            tok.nextToken();
-            String temp = (tok.hasMoreTokens()) ? tok.nextToken() : null;
-            if (temp != null) {
-                 final StringTokenizer tok1 = new StringTokenizer(temp, "=");
-                 String temp1 = (tok1.hasMoreTokens()) ? tok1.nextToken() : null;
-                 String temp2 = (tok1.hasMoreTokens()) ? tok1.nextToken() : null;
-                 if (temp2 != null)
-                      channel = Integer.parseInt(temp2);
-            }
-            Slog.d(TAG, "softap qccmd get channel =" + channel);
-            return channel;
-        } catch (NativeDaemonConnectorException e) {
-            throw new IllegalStateException(
-                     "Error communicating to native daemon to getSapOperatingChannel", e);
-        }
-    }
-
-     /*Get SAP Auto Channel Selection*/
-    public int getSapAutoChannelSelection() throws IllegalStateException{
-        mContext.enforceCallingOrSelfPermission(
-            android.Manifest.permission.CHANGE_NETWORK_STATE, "NetworkManagementService");
-        mContext.enforceCallingOrSelfPermission(
-            android.Manifest.permission.CHANGE_WIFI_STATE, "NetworkManagementService");
-        int autochannel=0;
-        try {
-            final NativeDaemonEvent OperChanResp;
-            Slog.d(TAG, "getSapAutoChannelSelection");
-            OperChanResp = mConnector.execute("softap", "qccmd", "get", "autochannel");
-
-            //Resp Pattern : 200 9 success autochannel=0
-            final StringTokenizer tok = new StringTokenizer(OperChanResp.getMessage());
-            tok.nextToken();
-            String temp = (tok.hasMoreTokens()) ? tok.nextToken() : null;
-            if (temp != null) {
-                 final StringTokenizer tok1 = new StringTokenizer(temp, "=");
-                 String temp1 = (tok1.hasMoreTokens()) ? tok1.nextToken() : null;
-                 String temp2 = (tok1.hasMoreTokens()) ? tok1.nextToken() : null;
-                 if (temp2 != null)
-                      autochannel = Integer.parseInt(temp2);
-            }
-            Slog.d(TAG, "getSapAutoChannelSelection--OperChanResp" + OperChanResp);
-            Slog.d(TAG, "softap qccmd get autochannel =" + autochannel);
-            return autochannel;
-        } catch (NativeDaemonConnectorException e) {
-              throw new IllegalStateException(
-                  "Error communicating to native daemon to getSapOperatingChannel", e);
-        }
-    }
-
     @Override
     public void setAccessPoint(WifiConfiguration wifiConfig, String wlanIface) {
         mContext.enforceCallingOrSelfPermission(CONNECTIVITY_INTERNAL, TAG);
@@ -1684,7 +1568,7 @@ public class NetworkManagementService extends INetworkManagementService.Stub
         pw.print("Firewall enabled: "); pw.println(mFirewallEnabled);
     }
 
-    @Override
+    //@Override
     public boolean replaceSrcRoute(String iface, byte[] ip, byte[] gateway, int routeId) {
         mContext.enforceCallingOrSelfPermission(CONNECTIVITY_INTERNAL, TAG);
         final NativeDaemonEvent rsp;
@@ -1737,7 +1621,7 @@ public class NetworkManagementService extends INetworkManagementService.Stub
         return true;
     }
 
-    @Override
+    //@Override
     public boolean delSrcRoute(byte[] ip, int routeId) {
         mContext.enforceCallingOrSelfPermission(CONNECTIVITY_INTERNAL, TAG);
         final NativeDaemonEvent rsp;
@@ -1772,7 +1656,7 @@ public class NetworkManagementService extends INetworkManagementService.Stub
         return true;
     }
 
-    @Override
+    //@Override
     public boolean addRouteWithMetric(String iface, int metric, RouteInfo route) {
         mContext.enforceCallingOrSelfPermission(CONNECTIVITY_INTERNAL, TAG);
         final NativeDaemonEvent rsp;
