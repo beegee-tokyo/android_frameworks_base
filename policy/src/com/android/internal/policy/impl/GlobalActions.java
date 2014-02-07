@@ -320,7 +320,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mItems.add(
                 new SinglePressAction(R.drawable.ic_lock_reboot, R.string.global_action_reboot) {
                     public void onPress() {
-                        mWindowManagerFuncs.reboot();
+/**** GANBAROU_CHANGE_START ****/
+                        mWindowManagerFuncs.reboot("");
+/**** GANBAROU_CHANGE_START ****/
                     }
 
                     public boolean onLongPress() {
@@ -337,6 +339,32 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     }
                 });
         }
+
+/**** GANBAROU_CHANGE_START ****/
+		// next: recovery
+		mItems.add(
+			new SinglePressAction(
+					com.android.internal.R.drawable.gb_recovery, 
+					com.android.internal.R.string.global_action_recovery) {
+				public void onPress() {
+					mWindowManagerFuncs.reboot("recovery");
+				}
+
+				public boolean onLongPress() {
+					mWindowManagerFuncs.reboot("bootloader");
+					return true;
+				}
+
+				public boolean showDuringKeyguard() {
+					return true;
+				}
+
+				public boolean showBeforeProvisioning() {
+					return true;
+				}
+			}
+		);
+/**** GANBAROU_CHANGE_START ****/
 
         // next: profile
         // only shown if both system profiles and the menu item is enabled, enabled by default

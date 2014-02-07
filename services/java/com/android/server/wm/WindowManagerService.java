@@ -4344,6 +4344,10 @@ public class WindowManagerService extends IWindowManager.Stub
             // If we are preparing an app transition, then delay changing
             // the visibility of this token until we execute that transition.
             if (okToDisplay() && mAppTransition.isTransitionSet()) {
+                // Already in requested state, don't do anything more.
+                if (wtoken.hiddenRequested != visible) {
+                    return;
+                }
                 wtoken.hiddenRequested = !visible;
 
                 if (!wtoken.startingDisplayed) {
@@ -5231,11 +5235,17 @@ public class WindowManagerService extends IWindowManager.Stub
         mPolicy.setTouchExplorationEnabled(enabled);
     }
 
+/**** GANBAROU_CHANGE_START ****/
+// In this ROM all reboot options are in the 
+// main power menu, not in a submenu.
+// mWindowManagerFuncs.reboot needs to know what kind
+// of reboot we want to do ==> reboot, recovery, bootloader !
     // Called by window manager policy.  Not exposed externally.
     @Override
-    public void reboot() {
-        ShutdownThread.reboot(getUiContext(), null, true);
+    public void reboot(String reason) {
+        ShutdownThread.reboot(mContext, reason, true);
     }
+/**** GANBAROU_CHANGE_END ****/
 
     public void setCurrentUser(final int newUserId) {
         synchronized (mWindowMap) {
@@ -5636,8 +5646,7 @@ public class WindowManagerService extends IWindowManager.Stub
 
                     // We keep on including windows until we go past a full-screen
                     // window.
-                    boolean fullscreen = ws.isFullscreen(dw, dh);
-                    including = !ws.mIsImWindow && !fullscreen;
+                    including = !ws.mIsImWindow && !ws.isFullscreen(dw, dh);
 
                     final WindowStateAnimator winAnim = ws.mWinAnimator;
                     if (maxLayer < winAnim.mSurfaceLayer) {
