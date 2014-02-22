@@ -420,9 +420,9 @@ public interface WindowManagerPolicy {
 
         public void shutdown(boolean confirm);
         public void rebootSafeMode(boolean confirm);
-        public void reboot();
         /** GANBAROU_PATCH_START **/
-	    public void recovery();
+        public void reboot(String reason);
+ 	     public void recovery();
         public void bootloader();
         /** GANBAROU_PATCH_END **/
     }

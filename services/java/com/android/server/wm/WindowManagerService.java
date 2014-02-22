@@ -5023,11 +5023,13 @@ public class WindowManagerService extends IWindowManager.Stub
         mInputManager.setInputFilter(filter);
     }
 
+    /** GANBAROU_PATCH_START **/
     // Called by window manager policy.  Not exposed externally.
     @Override
-    public void reboot() {
-        ShutdownThread.reboot(getUiContext(), null, true);
+    public void reboot(String reason) {
+        ShutdownThread.reboot(getUiContext(), reason, true);
     }
+    /** GANBAROU_PATCH_END **/
 
     public void setCurrentUser(final int newUserId) {
         synchronized (mWindowMap) {
